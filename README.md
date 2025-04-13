@@ -1,5 +1,5 @@
 ## Duck Delivery Fastapi System
-@SWIRCH/WpfDuckDelivery - C# App repo
+https://github.com/SWIRCH/WpfDuckDelivery - C# App repo
 
 ### Start Command:
 ```python
