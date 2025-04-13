@@ -18,7 +18,7 @@ ALGORITHM = getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
 
 def verify_password(plain_password: str, hashed_password: str):
@@ -67,3 +67,11 @@ async def get_current_active_user(
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+
+def check_permissions(required_roles: set):
+    def dependency(current_user: User = Depends(get_current_active_user)):
+        if current_user.role not in required_roles:
+            raise HTTPException(status_code=403, detail="Not enough permissions")
+        return current_user
+    return dependency

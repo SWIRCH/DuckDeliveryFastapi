@@ -22,11 +22,11 @@ app.add_middleware(
 )
 
 # Подключение роутеров
-app.include_router(clients.router, prefix="/clients", tags=["clients"])
-app.include_router(orders.router, prefix="/orders", tags=["orders"])
-app.include_router(courier.router, prefix="/courier", tags=["courier"])
-app.include_router(users.router, prefix="/users", tags=["users"])
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(clients.router, prefix="/api/clients", tags=["clients"])
+app.include_router(orders.router, prefix="/api/orders", tags=["orders"])
+app.include_router(courier.router, prefix="/api/courier", tags=["courier"])
+app.include_router(users.router, prefix="/api/users", tags=["users"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 
 @app.get("/")
 def read_root():

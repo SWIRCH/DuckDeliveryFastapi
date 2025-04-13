@@ -8,14 +8,18 @@ from app.crud.user import (
 )
 from app.schemas.user import User, UserCreate, UserUpdate
 from app.database import get_db
-from app.core.security import get_current_active_user
+from app.core.security import check_permissions
 
 
 router = APIRouter()
 
 
 @router.post("/", response_model=User)
-def create_user_endpoint(user: UserCreate, db: Session = Depends(get_db)):
+def create_user_endpoint(
+    user: UserCreate, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(check_permissions({'admin', 'manager'}))
+):
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -27,10 +31,8 @@ def read_users(
     skip: int = 0, 
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(check_permissions({'admin', 'manager'}))
 ):
-    if current_user.role != 'admin':
-        raise HTTPException(status_code=403, detail="Not enough permissions")
     return get_users(db, skip=skip, limit=limit)
 
 
@@ -38,13 +40,11 @@ def read_users(
 def read_user(
     user_id: int, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(check_permissions({'admin', 'manager'}))
 ):
     db_user = get_user(db, user_id=user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-    if current_user.role != 'admin' and current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
     return db_user
 
 
@@ -53,10 +53,8 @@ def update_user_endpoint(
     user_id: int,
     user: UserUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(check_permissions({'admin', 'manager'}))
 ):
-    if current_user.role != 'admin' and current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
     db_user = update_user(db, user_id=user_id, user=user)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -67,10 +65,8 @@ def update_user_endpoint(
 def delete_user_endpoint(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(check_permissions({'admin', 'manager'}))
 ):
-    if current_user.role != 'admin':
-        raise HTTPException(status_code=403, detail="Not enough permissions")
     success = delete_user(db, user_id=user_id)
     if not success:
         raise HTTPException(status_code=404, detail="User not found")
