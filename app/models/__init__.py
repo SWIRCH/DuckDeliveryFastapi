@@ -1,10 +1,8 @@
-from .user import User
+from .client import Client
 from .order import Order
-from .courier import Courier
-from .delivery import Delivery
 
 __all__ = [
-    'User',
+    'Client',
     'Order',
     'Courier',
     'Delivery'

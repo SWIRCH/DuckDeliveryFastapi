@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routers import users, orders, couriers, deliveries
+from app.routers import clients, orders, courier, users, auth
 
 # Создание всех таблиц в БД
 Base.metadata.create_all(bind=engine)
@@ -22,11 +22,11 @@ app.add_middleware(
 )
 
 # Подключение роутеров
-app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(clients.router, prefix="/clients", tags=["clients"])
 app.include_router(orders.router, prefix="/orders", tags=["orders"])
-app.include_router(couriers.router, prefix="/couriers", tags=["couriers"])
-app.include_router(deliveries.router, prefix="/deliveries", tags=["deliveries"])
-
+app.include_router(courier.router, prefix="/courier", tags=["courier"])
+app.include_router(users.router, prefix="/users", tags=["users"])
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 @app.get("/")
 def read_root():

@@ -1,24 +1,32 @@
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.models import Order
-from app.schemas import OrderCreate
+from typing import List
 
-def get_order(db: Session, order_id: int):
-    return db.query(Order).filter(Order.id == order_id).first()
+from app.database import get_db
+from app.schemas import Order, OrderCreate
+from app.crud import order as crud
 
-def get_orders(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Order).offset(skip).limit(limit).all()
+router = APIRouter()
 
-def create_order(db: Session, order: OrderCreate):
-    db_order = Order(**order.dict())
-    db.add(db_order)
-    db.commit()
-    db.refresh(db_order)
+@router.post("/", response_model=Order)
+def create_new_order(order: OrderCreate, db: Session = Depends(get_db)):
+    return crud.create_order(db=db, order=order)
+
+
+@router.get("/", response_model=List[Order])
+def read_orders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    orders = crud.get_orders(db, skip=skip, limit=limit)
+    return orders
+
+
+@router.get("/{order_id}", response_model=Order)
+def read_order(order_id: int, db: Session = Depends(get_db)):
+    db_order = crud.get_order(db, order_id=order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
     return db_order
 
-def update_order_status(db: Session, order_id: int, status: str):
-    db_order = db.query(Order).filter(Order.id == order_id).first()
-    if db_order:
-        db_order.status = status
-        db.commit()
-        db.refresh(db_order)
-    return db_order
+
+@router.put("/{order_id}/status")
+def update_order_status(order_id: int, status: str, db: Session = Depends(get_db)):
+    return crud.update_order_status(db=db, order_id=order_id, status=status)
