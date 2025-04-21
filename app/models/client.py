@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, Enum
-from sqlalchemy.ext.declarative import declarative_base
+from app.database import Base
 from enum import Enum as PyEnum
-
-Base = declarative_base()
 
 class ClientType(str, PyEnum):
     individual = "individual"
