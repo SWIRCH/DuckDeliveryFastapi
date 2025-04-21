@@ -2,6 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.routers import clients, orders, courier, users, auth
+import warnings
+
+warnings.filterwarnings("ignore", message="Valid config keys have changed in V2")
+warnings.filterwarnings("ignore")
 
 # Создание всех таблиц в БД
 Base.metadata.create_all(bind=engine)
