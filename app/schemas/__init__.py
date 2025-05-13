@@ -1,5 +1,5 @@
 from .client import ClientBase, LegalClientCreate, IndividualClientCreate, LegalClientCreate, Client
-from .order import OrderBase, OrderCreate, Order
+from .order import OrderBase, OrderCreate, Order, OrderUpdate
 
 __all__ = [
     'ClientBase',
@@ -9,4 +9,5 @@ __all__ = [
     'OrderBase',
     'OrderCreate',
     'Order',
+    'OrderUpdate',
 ]
